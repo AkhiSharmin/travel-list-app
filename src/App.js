@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: true },
-  { id: 3, description: "Charger", quantity: 1, packed: false }
-]
+// const initialItems = [
+//   { id: 1, description: "Passports", quantity: 2, packed: false },
+//   { id: 2, description: "Socks", quantity: 12, packed: true },
+//   { id: 3, description: "Charger", quantity: 1, packed: false }
+// ]
 
 export default function App() {
 
-  const [items, setItems] = useState(initialItems);
+  const [items, setItems] = useState([]);
 
   function handelAddItem(item) {
     setItems(items => [...items, item]);
@@ -35,7 +35,7 @@ export default function App() {
     <Logo />
     <Form onAddItems={handelAddItem} />
     <PackingList items={items} onDeleteItem={handelDeleteItem} onToggleItem={handleToggleItem} />
-    <Starts />
+    <Starts items={items} />
   </div>
 }
 
@@ -89,6 +89,17 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
         onToggleItem={onToggleItem}
         key={item.id} />)}
     </ul>
+
+
+    <div className="actions">
+      <select>
+        <option value="input">Sort by input order</option>
+        <option value="description">Sort by Description</option>
+        <option value="packed">Sort by Packed Status</option>
+      </select>
+    </div>
+
+
   </div>
 }
 
@@ -105,8 +116,24 @@ function Item({ item, onDeleteItem, onToggleItem }) {
 }
 
 
-function Starts() {
+function Starts({ items }) {
+  if (!items.length) return (
+    <p className="stats">
+      <span>Start adding some items to your packing list🛩</span>
+    </p>
+  );
+
+
+  const numItems = items.length;
+  const nunPacked = items.filter((item) => item.packed).length;
+  const percentage = Math.round((nunPacked / numItems) * 100);
+
   return <footer className="stats">
-    <span>You have X items on your list, and you already packed X (X%)</span>
+    <span>
+      {percentage === 100 ? "You got everything! Ready to go ✈" :
+        `You have ${numItems} items on your list, and you already packed ${nunPacked} (${percentage}%)`
+      }
+
+    </span>
   </footer>
 }
